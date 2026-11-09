@@ -16,8 +16,6 @@ export type StoredEditionStatus =
   | "closed"
   | "not_announced";
 
-export type EditionStatus = StoredEditionStatus | "expired";
-
 export type TeamCategory = TeamSize | "Unknown" | `${number}+`;
 
 export interface Organizer {
@@ -64,13 +62,15 @@ export interface Edition {
 export interface Competition {
   id: string;
   name: string;
-  field: Exclude<Field, "All">;
-  deadline: string;
-  difficulty: Difficulty;
+  field: Exclude<Field, "All"> | null;
+  deadline: string | null;
+  difficulty: Difficulty | null;
   tags: string[];
   season: Season;
-  teamSize: TeamSize;
+  teamSize: TeamSize | null;
   tier: Tier;
+  /** Effective status on the day the listing was built (see effectiveStatus). */
+  status: StoredEditionStatus;
   url?: string;
 }
 

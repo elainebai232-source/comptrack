@@ -3,8 +3,8 @@ import type {
   CompetitionRecord,
   CompetitionTier,
   Edition,
-  EditionStatus,
   Season,
+  StoredEditionStatus,
   TeamCategory,
   TeamSize,
   Tier,
@@ -64,22 +64,36 @@ export function teamSizeForListing(
   return "Team";
 }
 
-export function isEditionExpired(
-  edition: Edition,
-  now: Date = new Date()
-): boolean {
-  const deadline = edition.registrationDeadline ?? edition.endDate;
-  if (!deadline) return false;
-  const end = new Date(deadline + "T23:59:59");
-  return end.getTime() < now.getTime();
+/**
+ * Today's calendar date in New York as "YYYY-MM-DD".
+ * Dates are kept as ISO strings so they compare correctly with < / <=
+ * and never shift by a day because of the viewer's time zone.
+ */
+export function todayInNewYork(now: Date = new Date()): string {
+  // The en-CA locale formats dates as YYYY-MM-DD.
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(now);
 }
 
-export function editionStatus(
+/**
+ * Status to show for an edition on `today` ("YYYY-MM-DD").
+ * Never changes the stored data; old editions keep their dates.
+ */
+export function effectiveStatus(
   edition: Edition,
-  now: Date = new Date()
-): EditionStatus {
-  if (isEditionExpired(edition, now)) return "expired";
-  return edition.status;
+  today: string
+): StoredEditionStatus {
+  const { registrationDeadline, endDate, status } = edition;
+  // A deadline equal to today has not passed yet.
+  if (registrationDeadline === null || today <= registrationDeadline) {
+    return status;
+  }
+  if (endDate !== null && today <= endDate) return "closed";
+  return "not_announced";
 }
 
 export function academicSeasonFromUsuallyOpens(
@@ -93,17 +107,12 @@ export function tierLabel(tier: CompetitionTier): Tier {
   return TIER_LABEL[tier];
 }
 
+/** Never drops a card: null fields stay null and the UI decides how to show them. */
 export function toCompetitionView(
   record: CompetitionRecord,
-  edition: Edition
-): Competition | null {
-  if (!record.field || !record.difficulty || !edition.registrationDeadline) {
-    return null;
-  }
-
-  const teamSize = teamSizeForListing(record.teamSizeMin, record.teamSizeMax);
-  if (!teamSize) return null;
-
+  edition: Edition,
+  today: string
+): Competition {
   const view: Competition = {
     id: record.id,
     name: record.name,
@@ -114,8 +123,9 @@ export function toCompetitionView(
     // TODO: derive season from real dates (startDate / registrationDeadline);
     // keep usuallyOpens only as a fallback when no dates are known.
     season: academicSeasonFromUsuallyOpens(edition.usuallyOpens),
-    teamSize,
+    teamSize: teamSizeForListing(record.teamSizeMin, record.teamSizeMax),
     tier: tierLabel(record.tier),
+    status: effectiveStatus(edition, today),
   };
 
   if (record.officialUrl) {
@@ -132,4 +142,16 @@ export function currentEditionFor(
   const matches = editions.filter((e) => e.competitionId === competitionId);
   if (matches.length === 0) return undefined;
   return [...matches].sort((a, b) => b.season.localeCompare(a.season))[0];
+}
+
+/** One listing entry per competition that has at least one edition. */
+export function buildListing(
+  records: CompetitionRecord[],
+  editions: Edition[],
+  today: string
+): Competition[] {
+  return records.flatMap((record) => {
+    const edition = currentEditionFor(record.id, editions);
+    return edition ? [toCompetitionView(record, edition, today)] : [];
+  });
 }

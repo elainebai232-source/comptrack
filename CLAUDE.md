@@ -34,6 +34,10 @@ Where it conflicts with this file (e.g. it lists `prize` as a field), **this fil
 - `tier`: difficulty/selectivity — 1 = international flagship, 2 = national, 3 = regional / beginner-friendly
 - `prize`: **removed on purpose** (students care about reputation, not prize money)
 - The listing mapper must tolerate nullable fields; a null field should never make a card disappear.
+- Listing `status` is the *effective* status (`effectiveStatus` in `derived.ts`, today in
+  America/New_York): deadline null or not passed → stored status; passed but contest not
+  over → `closed`; otherwise → `not_announced`. Stored dates are never modified.
+  Check with `npm run check:listing`.
 - Status: Organizer/Competition/Edition split done, 7 existing rows migrated.
   COMAP MCM + ICM added as the first real sample data (2026-27 edition).
 

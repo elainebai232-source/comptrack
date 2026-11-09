@@ -22,8 +22,10 @@ export function CompetitionCard({ competition }: CompetitionCardProps) {
             {competition.name}
           </h2>
           <div className="mt-2 flex flex-wrap items-center gap-2">
-            <FieldBadge field={competition.field} />
-            <DifficultyBadge difficulty={competition.difficulty} />
+            {competition.field && <FieldBadge field={competition.field} />}
+            {competition.difficulty && (
+              <DifficultyBadge difficulty={competition.difficulty} />
+            )}
           </div>
         </div>
         <button
@@ -54,7 +56,7 @@ export function CompetitionCard({ competition }: CompetitionCardProps) {
         <div>
           <dt className="text-xs text-text-muted">Deadline</dt>
           <dd className="mt-0.5 font-medium text-text">
-            {formatDeadline(competition.deadline)}
+            {competition.deadline ? formatDeadline(competition.deadline) : "TBA"}
           </dd>
         </div>
         <div className="grid grid-cols-3 gap-3 border-t border-border-subtle pt-3">

@@ -20,8 +20,9 @@ export function CompetitionGrid() {
     if (showSavedOnly && hydrated) {
       list = list.filter((c) => saved.has(c.id));
     }
-    return [...list].sort(
-      (a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime()
+    // ISO dates sort correctly as strings; unknown deadlines go last.
+    return [...list].sort((a, b) =>
+      (a.deadline ?? "9999-12-31").localeCompare(b.deadline ?? "9999-12-31")
     );
   }, [field, showSavedOnly, saved, hydrated]);
 

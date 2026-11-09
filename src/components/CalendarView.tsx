@@ -13,6 +13,13 @@ import {
 import type { Competition } from "@/lib/types";
 import { FieldBadge } from "./FieldBadge";
 
+type DatedCompetition = Competition & { deadline: string };
+
+// Only competitions with a known deadline can be placed on the calendar.
+const datedCompetitions = competitions.filter(
+  (c): c is DatedCompetition => c.deadline !== null
+);
+
 export function CalendarView() {
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
@@ -20,8 +27,8 @@ export function CalendarView() {
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
 
   const byDate = useMemo(() => {
-    const map = new Map<string, Competition[]>();
-    for (const c of competitions) {
+    const map = new Map<string, DatedCompetition[]>();
+    for (const c of datedCompetitions) {
       const key = c.deadline;
       const list = map.get(key) ?? [];
       list.push(c);
@@ -55,13 +62,13 @@ export function CalendarView() {
     setSelectedDay(today);
   };
 
-  const deadlinesThisMonth = competitions.filter((c) => {
+  const deadlinesThisMonth = datedCompetitions.filter((c) => {
     const d = parseDate(c.deadline);
     return d.getFullYear() === year && d.getMonth() === month;
   });
 
   const selectedCompetitions = selectedDay
-    ? competitions.filter((c) => isSameDay(parseDate(c.deadline), selectedDay))
+    ? datedCompetitions.filter((c) => isSameDay(parseDate(c.deadline), selectedDay))
     : [];
 
   const cells: (number | null)[] = [
@@ -193,9 +200,11 @@ export function CalendarView() {
                   className="rounded-lg border border-border-subtle bg-surface p-3"
                 >
                   <p className="text-sm font-medium text-text">{c.name}</p>
-                  <div className="mt-1.5">
-                    <FieldBadge field={c.field} />
-                  </div>
+                  {c.field && (
+                    <div className="mt-1.5">
+                      <FieldBadge field={c.field} />
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>
@@ -231,7 +240,8 @@ export function CalendarView() {
 }
 
 function dotColor(field: Competition["field"]): string {
-  const map: Record<Competition["field"], string> = {
+  if (field === null) return "bg-text-muted";
+  const map: Record<NonNullable<Competition["field"]>, string> = {
     Quant: "bg-indigo-400",
     ML: "bg-emerald-400",
     Math: "bg-amber-400",
