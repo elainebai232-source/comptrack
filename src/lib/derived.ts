@@ -124,6 +124,8 @@ export function toCompetitionView(
     // keep usuallyOpens only as a fallback when no dates are known.
     season: academicSeasonFromUsuallyOpens(edition.usuallyOpens),
     teamSize: teamSizeForListing(record.teamSizeMin, record.teamSizeMax),
+    teamSizeMin: record.teamSizeMin,
+    teamSizeMax: record.teamSizeMax,
     tier: tierLabel(record.tier),
     status: effectiveStatus(edition, today),
   };

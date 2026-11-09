@@ -68,10 +68,11 @@ export interface Competition {
   tags: string[];
   season: Season;
   teamSize: TeamSize | null;
+  /** Real numbers from the record; filter buckets are derived from these. */
+  teamSizeMin: number | null;
+  teamSizeMax: number | null;
   tier: Tier;
   /** Effective status on the day the listing was built (see effectiveStatus). */
   status: StoredEditionStatus;
   url?: string;
 }
-
-export const FIELDS: Field[] = ["All", "Quant", "ML", "Math", "Finance", "CS"];

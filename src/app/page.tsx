@@ -1,4 +1,6 @@
+import { Suspense } from "react";
 import { CompetitionGrid } from "@/components/CompetitionGrid";
+import { CompetitionGridWithUrl } from "@/components/CompetitionGridWithUrl";
 import { todayInNewYork } from "@/lib/derived";
 
 // Re-render at most once an hour so "today" (and therefore each card's
@@ -21,7 +23,11 @@ export default function HomePage() {
           never miss a deadline.
         </p>
       </header>
-      <CompetitionGrid today={today} />
+      {/* useSearchParams needs a Suspense boundary so the page can stay static.
+          The fallback (in the pre-rendered HTML) is the default, unfiltered view. */}
+      <Suspense fallback={<CompetitionGrid today={today} />}>
+        <CompetitionGridWithUrl today={today} />
+      </Suspense>
     </div>
   );
 }

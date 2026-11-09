@@ -41,9 +41,25 @@ Where it conflicts with this file (e.g. it lists `prize` as a field), **this fil
 - **"Today" comes from the server.** `app/page.tsx` computes `todayInNewYork()` (page
   `revalidate = 3600`) and passes it as a `today` prop; client components build the listing
   from that prop and never call `new Date()` for status. Keeps server/client HTML identical.
-- **Homepage visibility** (`visibleCompetitions` in `src/lib/filters.ts`): field filter always
-  applies; `not_announced` cards are hidden unless "Show competitions with no posting yet" is
-  on; "Saved only" ignores that hiding (a saved card always shows).
+- **Homepage visibility** (`visibleCompetitions` in `src/lib/filters.ts`, all pure functions):
+  field and team-size filters always apply; `not_announced` cards are hidden unless "Show
+  competitions with no posting yet" is on; "Saved only" ignores that hiding (a saved card
+  always shows, if it passes field/team).
+- **Team-size filter** (multi-select, match any): buckets Solo [1,1], 2–3 [2,3], 4+ [4,∞).
+  A competition's range: [min,max]; max null → [min,∞); min null & max known → [1,max];
+  both null → unknown. It matches when its range overlaps a selected bucket. No bucket = no
+  team filter. Unknown sizes pass only with "Include not specified" (disabled until a bucket
+  is selected).
+- **URL state**: `?field=Math&team=solo,small&unspecified=1&noPosting=1`
+  (`parseFilterParams` / `serializeFilterParams`). Defaults are omitted; unknown/invalid
+  values are ignored (valid ones kept); "Saved only" is never in the URL. The URL is the single
+  source of truth: `CompetitionGridWithUrl` reads `useSearchParams` inside `<Suspense>` (keeps
+  `/` static + hourly revalidate) and writes with `window.history.replaceState` (no history
+  entry, no scroll, no server round trip). Updates are computed from the current URL, not the
+  last render.
+- Result bar: "Showing X of Y" (Y = all competitions); "N hidden (no posting yet)" turns the
+  toggle on; "Clear all filters" (only when a URL filter is non-default) resets URL filters but
+  not saved items / "Saved only".
 - Card display: status badge on every card; "No posting yet" cards show "Last deadline: <date>"
   (or no deadline row if null), never the old date as the current deadline; null team size →
   "Not specified".
@@ -61,6 +77,13 @@ Keep this list current: add items as they come up, remove them when fixed.
   (startDate / registrationDeadline), with `usuallyOpens` only as a fallback.
 - The 6 original competitions (ids 1, 2, 3, 5, 6, 7) are placeholder data — replace with real
   current-season data.
+- Opening a filtered link (e.g. `/?field=Math&noPosting=1`) briefly shows the default 3 cards
+  before the filtered view: the static HTML is the Suspense fallback (default filters), and
+  the URL is only read in the browser.
+- An invalid link (e.g. `?field=xyz`) keeps its bad params in the address bar until the first
+  filter change rewrites the URL (the view itself already ignores them).
+- Card "Team" cell still shows the coarse label (Solo / Team / Both); could show the real
+  range (e.g. "1–3", "2+") now that min/max are on the listing.
 
 ## How I like to work
 - I'm a Math student, still learning web dev — briefly explain *why* when making

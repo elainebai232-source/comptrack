@@ -16,8 +16,11 @@ Live site: https://comptrack-lime.vercel.app
 
 - **Home** — Competition cards with name, status (Open / Upcoming / Closed / No posting yet),
   field, deadline, difficulty, and skill tags
-- **Filter** — Filter competitions by field. Competitions with no current posting are hidden
-  by default; a "Show competitions with no posting yet" toggle reveals them
+- **Filter** — Filter by field and team size (Solo / 2–3 / 4+, multi-select). Competitions
+  with no current posting are hidden by default; a "Show competitions with no posting yet"
+  toggle reveals them. A result count, "Clear all filters", and a helpful empty state
+- **Shareable links** — Filters are kept in the URL
+  (e.g. `/?field=Math&team=solo,small&noPosting=1`), so a filtered view can be shared
 - **Calendar** — Monthly view of competition deadlines
 - **Save** — Bookmark competitions (stored in browser localStorage)
 

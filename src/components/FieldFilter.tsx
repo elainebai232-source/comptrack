@@ -1,5 +1,5 @@
 import type { Field } from "@/lib/types";
-import { FIELDS } from "@/lib/types";
+import { FIELDS } from "@/lib/filters";
 
 interface FieldFilterProps {
   selected: Field;
