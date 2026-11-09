@@ -8,6 +8,7 @@ import {
   effectiveStatus,
   todayInNewYork,
 } from "../src/lib/derived.ts";
+import { visibleCompetitions } from "../src/lib/filters.ts";
 
 const statusById = (today) =>
   Object.fromEntries(
@@ -81,6 +82,35 @@ assert.equal(listing[0].difficulty, null);
 
 // Real data: all 9 competitions appear.
 assert.equal(buildListing(competitionRecords, editions, "2026-11-09").length, 9);
+
+// Homepage visibility (visibleCompetitions) as of 2026-11-09.
+const nov9 = buildListing(competitionRecords, editions, "2026-11-09");
+const ids = (opts) =>
+  visibleCompetitions(nov9, {
+    field: "All",
+    savedOnly: false,
+    showNoPosting: false,
+    saved: new Set(),
+    ...opts,
+  })
+    .map((c) => c.id)
+    .sort();
+assert.deepEqual(ids({}), ["4", "8", "9"], "default hides not_announced");
+assert.equal(ids({ showNoPosting: true }).length, 9, "toggle on shows all");
+for (const field of ["Quant", "ML", "Math", "Finance", "CS"]) {
+  const expectedAll = nov9.filter((c) => c.field === field).map((c) => c.id).sort();
+  assert.deepEqual(ids({ field, showNoPosting: true }), expectedAll, `${field}, toggle on`);
+  assert.deepEqual(
+    ids({ field }),
+    expectedAll.filter((id) => ["4", "8", "9"].includes(id)),
+    `${field}, toggle off`
+  );
+}
+assert.deepEqual(
+  ids({ savedOnly: true, saved: new Set(["1", "8"]) }),
+  ["1", "8"],
+  "saved only ignores default hiding"
+);
 
 // New York date: 2026-11-10 03:00 UTC is still Nov 9 in New York.
 assert.equal(todayInNewYork(new Date("2026-11-10T03:00:00Z")), "2026-11-09");

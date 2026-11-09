@@ -5,6 +5,7 @@ import { formatDeadline } from "@/lib/date";
 import { useSavedContext } from "@/context/SavedContext";
 import { DifficultyBadge } from "./DifficultyBadge";
 import { FieldBadge } from "./FieldBadge";
+import { StatusBadge } from "./StatusBadge";
 
 interface CompetitionCardProps {
   competition: Competition;
@@ -13,6 +14,9 @@ interface CompetitionCardProps {
 export function CompetitionCard({ competition }: CompetitionCardProps) {
   const { isSaved, toggle, hydrated } = useSavedContext();
   const saved = hydrated && isSaved(competition.id);
+  // For "No posting yet" the stored deadline belongs to a past edition,
+  // so it is shown as "Last deadline", never as the current one.
+  const noPosting = competition.status === "not_announced";
 
   return (
     <article className="group flex flex-col rounded-xl border border-border-subtle bg-surface-raised p-5 transition-all hover:border-border hover:bg-surface-hover">
@@ -22,6 +26,7 @@ export function CompetitionCard({ competition }: CompetitionCardProps) {
             {competition.name}
           </h2>
           <div className="mt-2 flex flex-wrap items-center gap-2">
+            <StatusBadge status={competition.status} />
             {competition.field && <FieldBadge field={competition.field} />}
             {competition.difficulty && (
               <DifficultyBadge difficulty={competition.difficulty} />
@@ -53,12 +58,23 @@ export function CompetitionCard({ competition }: CompetitionCardProps) {
       </div>
 
       <dl className="mb-4 space-y-3 text-sm">
-        <div>
-          <dt className="text-xs text-text-muted">Deadline</dt>
-          <dd className="mt-0.5 font-medium text-text">
-            {competition.deadline ? formatDeadline(competition.deadline) : "TBA"}
-          </dd>
-        </div>
+        {noPosting ? (
+          competition.deadline && (
+            <div>
+              <dt className="text-xs text-text-muted">Last deadline</dt>
+              <dd className="mt-0.5 font-medium text-text-muted">
+                {formatDeadline(competition.deadline)}
+              </dd>
+            </div>
+          )
+        ) : (
+          <div>
+            <dt className="text-xs text-text-muted">Deadline</dt>
+            <dd className="mt-0.5 font-medium text-text">
+              {competition.deadline ? formatDeadline(competition.deadline) : "TBA"}
+            </dd>
+          </div>
+        )}
         <div className="grid grid-cols-3 gap-3 border-t border-border-subtle pt-3">
           <div>
             <dt className="text-xs text-text-muted">Season</dt>
@@ -66,7 +82,8 @@ export function CompetitionCard({ competition }: CompetitionCardProps) {
           </div>
           <div>
             <dt className="text-xs text-text-muted">Team</dt>
-            <dd className="mt-0.5 font-medium text-text">{competition.teamSize}</dd>
+            <dd className="mt-0.5 font-medium text-text">{competition.teamSize ?? "Not specified"}
+            </dd>
           </div>
           <div>
             <dt className="text-xs text-text-muted">Tier</dt>

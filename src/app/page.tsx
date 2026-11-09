@@ -1,6 +1,15 @@
 import { CompetitionGrid } from "@/components/CompetitionGrid";
+import { todayInNewYork } from "@/lib/derived";
+
+// Re-render at most once an hour so "today" (and therefore each card's
+// effective status) stays current without making every request dynamic.
+export const revalidate = 3600;
 
 export default function HomePage() {
+  // Computed once on the server and passed down, so the server HTML and the
+  // client render use the same date (no hydration mismatch near midnight).
+  const today = todayInNewYork();
+
   return (
     <div>
       <header className="mb-10">
@@ -12,7 +21,7 @@ export default function HomePage() {
           never miss a deadline.
         </p>
       </header>
-      <CompetitionGrid />
+      <CompetitionGrid today={today} />
     </div>
   );
 }

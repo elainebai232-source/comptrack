@@ -38,9 +38,29 @@ Where it conflicts with this file (e.g. it lists `prize` as a field), **this fil
   America/New_York): deadline null or not passed → stored status; passed but contest not
   over → `closed`; otherwise → `not_announced`. Stored dates are never modified.
   Check with `npm run check:listing`.
+- **"Today" comes from the server.** `app/page.tsx` computes `todayInNewYork()` (page
+  `revalidate = 3600`) and passes it as a `today` prop; client components build the listing
+  from that prop and never call `new Date()` for status. Keeps server/client HTML identical.
+- **Homepage visibility** (`visibleCompetitions` in `src/lib/filters.ts`): field filter always
+  applies; `not_announced` cards are hidden unless "Show competitions with no posting yet" is
+  on; "Saved only" ignores that hiding (a saved card always shows).
+- Card display: status badge on every card; "No posting yet" cards show "Last deadline: <date>"
+  (or no deadline row if null), never the old date as the current deadline; null team size →
+  "Not specified".
 - Status: Organizer/Competition/Edition split done, 7 existing rows migrated.
   COMAP MCM + ICM added as the first real sample data (2026-27 edition).
 
+## Known issues / TODO
+Keep this list current: add items as they come up, remove them when fixed.
+- Calendar (`CalendarView.tsx`) still uses the module-level `competitions` from
+  `lib/competitions.ts` (built with the module's own `todayInNewYork()`) and `new Date()` for
+  "today" — should take the server `today` prop like the homepage.
+- `usuallyOpens` lives on Edition; it should move to Competition (it's a property of the
+  competition, not of one season).
+- Card `season` is derived from `usuallyOpens`; it should be derived from real dates
+  (startDate / registrationDeadline), with `usuallyOpens` only as a fallback.
+- The 6 original competitions (ids 1, 2, 3, 5, 6, 7) are placeholder data — replace with real
+  current-season data.
 
 ## How I like to work
 - I'm a Math student, still learning web dev — briefly explain *why* when making
