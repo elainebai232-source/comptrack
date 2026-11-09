@@ -37,3 +37,6 @@ next-env.d.ts
 
 # local Claude Code launch config
 .claude/launch.json
+
+# grant proposal (private, local only)
+docs/proposal.md

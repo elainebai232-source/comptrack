@@ -15,21 +15,17 @@ No backend database yet — bookmarks live in browser localStorage.
 Pushing to `main` likely triggers a Vercel production deploy, so check locally
 (`npm run dev`) before pushing.
 
-## Why it matters right now (PLP grant)
-This site is the deliverable for my Simmons **Passionate Leaders Project** award:
-"CompTrack: Closing the Opportunity Gap for Students at Small Colleges".
-- Supervisor: Prof. Nanette Veilleux · Term: Nov 2026 – June 30, 2027
-- Planned presentation: SIGCSE TS 2028 poster (education / equity framing)
-- Submitted proposal: `docs/proposal.md` — read only when the task needs it.
-  Where it conflicts with this file (e.g. it lists `prize` as a field), **this file wins**.
+## Background doc
+`docs/proposal.md` is a local-only background doc (gitignored, never commit it or copy
+its contents into tracked files). Read only when the task needs it.
+Where it conflicts with this file (e.g. it lists `prize` as a field), **this file wins**.
 
-## Roadmap (from the proposal)
+## Roadmap
 - **Nov** — finalize data model; finish core features (filter refinements, calendar polish)  ← CURRENT
 - **Dec** — design scraping pipeline; identify & validate target sources; start scraper
 - **Jan** — build/test scraper on first sources; map fields to schema; scheduled refresh + expired-listing removal
 - **Feb** — monitor data accuracy; expand sources; fix update process
 - **Mar** — finish source coverage; peer feedback; refine tagging; final testing; public launch
-- **Apr** — PLP presentation, poster, deliverable materials
 
 ## Data model decisions (already made — don't relitigate)
 - Three layers: **Organizer → Competition → Edition**
