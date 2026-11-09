@@ -43,5 +43,4 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## About
 
-Built by Yilin Bai (Simmons University, Mathematics) as a 2026–2027 Simmons
-**Passionate Leaders Project**, supervised by Prof. Nanette Veilleux.
+Built by Yilin Bai (Simmons University, Mathematics).
