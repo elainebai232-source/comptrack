@@ -111,6 +111,8 @@ export function toCompetitionView(
     deadline: edition.registrationDeadline,
     difficulty: record.difficulty,
     tags: record.topics,
+    // TODO: derive season from real dates (startDate / registrationDeadline);
+    // keep usuallyOpens only as a fallback when no dates are known.
     season: academicSeasonFromUsuallyOpens(edition.usuallyOpens),
     teamSize,
     tier: tierLabel(record.tier),

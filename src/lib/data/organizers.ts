@@ -43,4 +43,10 @@ export const organizers: Organizer[] = [
     website: null,
     description: null,
   },
+  {
+    id: "org-comap",
+    name: "COMAP",
+    website: "https://www.comap.org",
+    description: "Consortium for Mathematics and Its Applications",
+  },
 ];
