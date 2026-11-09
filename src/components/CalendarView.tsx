@@ -196,7 +196,6 @@ export function CalendarView() {
                   <div className="mt-1.5">
                     <FieldBadge field={c.field} />
                   </div>
-                  <p className="mt-1 text-xs text-text-muted">{c.prize}</p>
                 </li>
               ))}
             </ul>

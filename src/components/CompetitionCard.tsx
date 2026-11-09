@@ -50,16 +50,26 @@ export function CompetitionCard({ competition }: CompetitionCardProps) {
         </button>
       </div>
 
-      <dl className="mb-4 grid grid-cols-2 gap-3 text-sm">
+      <dl className="mb-4 space-y-3 text-sm">
         <div>
           <dt className="text-xs text-text-muted">Deadline</dt>
           <dd className="mt-0.5 font-medium text-text">
             {formatDeadline(competition.deadline)}
           </dd>
         </div>
-        <div>
-          <dt className="text-xs text-text-muted">Prize</dt>
-          <dd className="mt-0.5 font-medium text-text">{competition.prize}</dd>
+        <div className="grid grid-cols-3 gap-3 border-t border-border-subtle pt-3">
+          <div>
+            <dt className="text-xs text-text-muted">Season</dt>
+            <dd className="mt-0.5 font-medium text-text">{competition.season}</dd>
+          </div>
+          <div>
+            <dt className="text-xs text-text-muted">Team</dt>
+            <dd className="mt-0.5 font-medium text-text">{competition.teamSize}</dd>
+          </div>
+          <div>
+            <dt className="text-xs text-text-muted">Tier</dt>
+            <dd className="mt-0.5 font-medium text-text">{competition.tier}</dd>
+          </div>
         </div>
       </dl>
 
