@@ -2,6 +2,7 @@
 
 import type { Competition } from "@/lib/types";
 import { formatDeadline } from "@/lib/date";
+import { teamSizeLabel } from "@/lib/derived";
 import { useSavedContext } from "@/context/SavedContext";
 import { DifficultyBadge } from "./DifficultyBadge";
 import { FieldBadge } from "./FieldBadge";
@@ -75,19 +76,15 @@ export function CompetitionCard({ competition }: CompetitionCardProps) {
             </dd>
           </div>
         )}
-        <div className="grid grid-cols-3 gap-3 border-t border-border-subtle pt-3">
+        <div className="grid grid-cols-2 gap-3 border-t border-border-subtle pt-3">
           <div>
             <dt className="text-xs text-text-muted">Season</dt>
             <dd className="mt-0.5 font-medium text-text">{competition.season}</dd>
           </div>
           <div>
             <dt className="text-xs text-text-muted">Team</dt>
-            <dd className="mt-0.5 font-medium text-text">{competition.teamSize ?? "Not specified"}
+            <dd className="mt-0.5 font-medium text-text">{teamSizeLabel(competition.teamSizeMin, competition.teamSizeMax)}
             </dd>
-          </div>
-          <div>
-            <dt className="text-xs text-text-muted">Tier</dt>
-            <dd className="mt-0.5 font-medium text-text">{competition.tier}</dd>
           </div>
         </div>
       </dl>

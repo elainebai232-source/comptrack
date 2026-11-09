@@ -4,19 +4,11 @@ export type Difficulty = "Beginner" | "Intermediate" | "Advanced";
 
 export type Season = "Spring" | "Summer" | "Fall" | "Winter" | "Year-round";
 
-export type TeamSize = "Solo" | "Team" | "Both";
-
-export type Tier = "Beginner-friendly" | "Competitive" | "Elite";
-
-export type CompetitionTier = 1 | 2 | 3;
-
 export type StoredEditionStatus =
   | "open"
   | "upcoming"
   | "closed"
   | "not_announced";
-
-export type TeamCategory = TeamSize | "Unknown" | `${number}+`;
 
 export interface Organizer {
   id: string;
@@ -32,7 +24,6 @@ export interface CompetitionRecord {
   officialUrl: string | null;
   organizerId: string;
   topics: string[];
-  tier: CompetitionTier;
   teamSizeMin: number | null;
   teamSizeMax: number | null;
   eligibility: string | null;
@@ -67,11 +58,9 @@ export interface Competition {
   difficulty: Difficulty | null;
   tags: string[];
   season: Season;
-  teamSize: TeamSize | null;
-  /** Real numbers from the record; filter buckets are derived from these. */
+  /** Real numbers from the record; the card label and filter buckets are derived from these. */
   teamSizeMin: number | null;
   teamSizeMax: number | null;
-  tier: Tier;
   /** Effective status on the day the listing was built (see effectiveStatus). */
   status: StoredEditionStatus;
   url?: string;

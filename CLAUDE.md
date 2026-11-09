@@ -30,8 +30,9 @@ Where it conflicts with this file (e.g. it lists `prize` as a field), **this fil
 ## Data model decisions (already made — don't relitigate)
 - Three layers: **Organizer → Competition → Edition**
   (e.g. COMAP → MCM / ICM / HiMCM → a specific season/year)
-- `teamSize`: store real `min` / `max` numbers; filter tags (1 / 2–3 / 4+) are **derived** from them
-- `tier`: difficulty/selectivity — 1 = international flagship, 2 = national, 3 = regional / beginner-friendly
+- `teamSize`: store real `min` / `max` numbers; filter tags (1 / 2–3 / 4+) and the card label
+  are **derived** from them
+- `tier`: **removed on purpose** (no tier field, label, or card cell)
 - `prize`: **removed on purpose** (students care about reputation, not prize money)
 - The listing mapper must tolerate nullable fields; a null field should never make a card disappear.
 - Listing `status` is the *effective* status (`effectiveStatus` in `derived.ts`, today in
@@ -61,8 +62,10 @@ Where it conflicts with this file (e.g. it lists `prize` as a field), **this fil
   toggle on; "Clear all filters" (only when a URL filter is non-default) resets URL filters but
   not saved items / "Saved only".
 - Card display: status badge on every card; "No posting yet" cards show "Last deadline: <date>"
-  (or no deadline row if null), never the old date as the current deadline; null team size →
-  "Not specified".
+  (or no deadline row if null), never the old date as the current deadline. Card bottom row:
+  Season | Team. Team = `teamSizeLabel(min, max)` in `derived.ts`: min = max → "N"; min ≠ max →
+  "1–3" (en dash); only min → "N+"; only max → "1–N" ("1" if N = 1); neither → "Not specified"
+  (not "Not announced", which would clash with the `not_announced` status).
 - Status: Organizer/Competition/Edition split done, 7 existing rows migrated.
   COMAP MCM + ICM added as the first real sample data (2026-27 edition).
 
@@ -82,8 +85,6 @@ Keep this list current: add items as they come up, remove them when fixed.
   the URL is only read in the browser.
 - An invalid link (e.g. `?field=xyz`) keeps its bad params in the address bar until the first
   filter change rewrites the URL (the view itself already ignores them).
-- Card "Team" cell still shows the coarse label (Solo / Team / Both); could show the real
-  range (e.g. "1–3", "2+") now that min/max are on the listing.
 
 ## How I like to work
 - I'm a Math student, still learning web dev — briefly explain *why* when making

@@ -1,13 +1,9 @@
 import type {
   Competition,
   CompetitionRecord,
-  CompetitionTier,
   Edition,
   Season,
   StoredEditionStatus,
-  TeamCategory,
-  TeamSize,
-  Tier,
 } from "./types";
 
 const MONTH_TO_SEASON: Record<string, Season> = {
@@ -25,43 +21,17 @@ const MONTH_TO_SEASON: Record<string, Season> = {
   Dec: "Winter",
 };
 
-const TIER_LABEL: Record<CompetitionTier, Tier> = {
-  1: "Elite",
-  2: "Competitive",
-  3: "Beginner-friendly",
-};
-
-export function teamCategory(
-  teamSizeMin: number | null,
-  teamSizeMax: number | null
-): TeamCategory {
-  if (teamSizeMin === null && teamSizeMax === null) return "Unknown";
-
-  if (teamSizeMax === null && teamSizeMin !== null) {
-    return `${teamSizeMin}+`;
-  }
-
-  const min = teamSizeMin ?? 1;
-  const max = teamSizeMax as number;
-
-  if (min === 1 && max === 1) return "Solo";
-  if (min === 1 && max > 1) return "Both";
-  return "Team";
-}
-
-export function teamSizeForListing(
-  teamSizeMin: number | null,
-  teamSizeMax: number | null
-): TeamSize | null {
-  const category = teamCategory(teamSizeMin, teamSizeMax);
-  if (category === "Unknown") return null;
-  if (category === "Solo" || category === "Team" || category === "Both") {
-    return category;
-  }
-
-  const min = Number.parseInt(category, 10);
-  if (min <= 1) return "Both";
-  return "Team";
+/**
+ * Card label for the real team size (en dash for ranges).
+ * - min = max → "N"; min ≠ max → "min–max"
+ * - only min → "N+"; only max → "1–N" ("1" if N is 1)
+ * - neither → "Not specified"
+ */
+export function teamSizeLabel(min: number | null, max: number | null): string {
+  if (min === null && max === null) return "Not specified";
+  if (max === null) return `${min}+`;
+  const lo = min ?? 1;
+  return lo === max ? `${lo}` : `${lo}–${max}`;
 }
 
 /**
@@ -103,10 +73,6 @@ export function academicSeasonFromUsuallyOpens(
   return MONTH_TO_SEASON[usuallyOpens] ?? "Year-round";
 }
 
-export function tierLabel(tier: CompetitionTier): Tier {
-  return TIER_LABEL[tier];
-}
-
 /** Never drops a card: null fields stay null and the UI decides how to show them. */
 export function toCompetitionView(
   record: CompetitionRecord,
@@ -123,10 +89,8 @@ export function toCompetitionView(
     // TODO: derive season from real dates (startDate / registrationDeadline);
     // keep usuallyOpens only as a fallback when no dates are known.
     season: academicSeasonFromUsuallyOpens(edition.usuallyOpens),
-    teamSize: teamSizeForListing(record.teamSizeMin, record.teamSizeMax),
     teamSizeMin: record.teamSizeMin,
     teamSizeMax: record.teamSizeMax,
-    tier: tierLabel(record.tier),
     status: effectiveStatus(edition, today),
   };
 

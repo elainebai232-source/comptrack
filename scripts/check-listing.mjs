@@ -6,6 +6,7 @@ import { editions } from "../src/lib/data/editions.ts";
 import {
   buildListing,
   effectiveStatus,
+  teamSizeLabel,
   todayInNewYork,
 } from "../src/lib/derived.ts";
 import {
@@ -73,7 +74,6 @@ const nullRecord = {
   officialUrl: null,
   organizerId: "org-test",
   topics: [],
-  tier: 3,
   teamSizeMin: null,
   teamSizeMax: null,
   eligibility: null,
@@ -204,6 +204,23 @@ assert.deepEqual(q("team=solo%2Csmall"), { ...DEFAULT_FILTERS, teams: ["solo", "
 assert.deepEqual(q("savedOnly=1&foo=bar"), DEFAULT_FILTERS, "unknown params ignored");
 assert.equal(isDefaultFilters(DEFAULT_FILTERS), true);
 assert.equal(isDefaultFilters({ ...DEFAULT_FILTERS, includeUnspecified: true }), false);
+
+// Card team-size label from real min/max.
+assert.equal(teamSizeLabel(1, 1), "1", "min = max");
+assert.equal(teamSizeLabel(4, 4), "4", "min = max > 1");
+assert.equal(teamSizeLabel(1, 3), "1–3", "range uses en dash");
+assert.equal(teamSizeLabel(2, null), "2+", "only min");
+assert.equal(teamSizeLabel(null, 3), "1–3", "only max → 1–N");
+assert.equal(teamSizeLabel(null, 1), "1", "only max = 1");
+assert.equal(teamSizeLabel(null, null), "Not specified", "neither");
+const labelById = Object.fromEntries(
+  nov9.map((c) => [c.id, teamSizeLabel(c.teamSizeMin, c.teamSizeMax)])
+);
+assert.equal(labelById["8"], "1–3", "MCM");
+assert.equal(labelById["9"], "1–3", "ICM");
+assert.equal(labelById["4"], "1", "Putnam");
+assert.equal(labelById["2"], "2+", "Jane Street");
+assert.ok(!("tier" in nov9[0]), "tier removed from listing");
 
 // New York date: 2026-11-10 03:00 UTC is still Nov 9 in New York.
 assert.equal(todayInNewYork(new Date("2026-11-10T03:00:00Z")), "2026-11-09");

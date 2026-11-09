@@ -25,7 +25,7 @@ Live site: https://comptrack-lime.vercel.app
 - **Save** — Bookmark competitions (stored in browser localStorage)
 
 ### In progress
-- Richer data model: Organizer → Competition → Edition, team size, competition tier
+- Richer data model: Organizer → Competition → Edition, real team-size ranges
 - Automated scraping pipeline to collect competition listings
 - Scheduled refresh and automatic removal of expired competitions
 

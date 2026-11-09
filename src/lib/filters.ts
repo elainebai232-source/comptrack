@@ -35,7 +35,7 @@ const BUCKET_RANGE: Record<TeamBucket, TeamRange> = {
  * - min and max known → [min, max]
  * - min known, max null → [min, ∞)
  * - both null → unknown (null)
- * - min null, max known → [1, max] (same convention as teamCategory)
+ * - min null, max known → [1, max] (same as the card label, teamSizeLabel)
  */
 export function teamRange(min: number | null, max: number | null): TeamRange | null {
   if (min === null && max === null) return null;
