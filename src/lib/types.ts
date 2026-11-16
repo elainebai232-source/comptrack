@@ -2,7 +2,7 @@ export type Field = "Quant" | "ML" | "Math" | "Data" | "CS" | "All";
 
 export type Difficulty = "Beginner" | "Intermediate" | "Advanced";
 
-export type Season = "Spring" | "Summer" | "Fall" | "Winter" | "Year-round";
+export type Term = "Spring" | "Summer" | "Fall" | "Winter" | "Year-round";
 
 export type StoredEditionStatus =
   | "open"
@@ -56,8 +56,8 @@ export interface Competition {
   field: Exclude<Field, "All"> | null;
   deadline: string | null;
   difficulty: Difficulty | null;
-  tags: string[];
-  season: Season;
+  topics: string[];
+  term: Term;
   /** Real numbers from the record; the card label and filter buckets are derived from these. */
   teamSizeMin: number | null;
   teamSizeMax: number | null;

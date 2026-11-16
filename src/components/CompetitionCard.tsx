@@ -79,7 +79,7 @@ export function CompetitionCard({ competition }: CompetitionCardProps) {
         <div className="grid grid-cols-2 gap-3 border-t border-border-subtle pt-3">
           <div>
             <dt className="text-xs text-text-muted">Season</dt>
-            <dd className="mt-0.5 font-medium text-text">{competition.season}</dd>
+            <dd className="mt-0.5 font-medium text-text">{competition.term}</dd>
           </div>
           <div>
             <dt className="text-xs text-text-muted">Team</dt>
@@ -90,12 +90,12 @@ export function CompetitionCard({ competition }: CompetitionCardProps) {
       </dl>
 
       <div className="mt-auto flex flex-wrap gap-1.5">
-        {competition.tags.map((tag) => (
+        {competition.topics.map((topic) => (
           <span
-            key={tag}
+            key={topic}
             className="rounded-md bg-surface px-2 py-0.5 text-xs text-text-muted ring-1 ring-border-subtle"
           >
-            {tag}
+            {topic}
           </span>
         ))}
       </div>

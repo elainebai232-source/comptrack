@@ -3,6 +3,7 @@
 import assert from "node:assert/strict";
 import { competitionRecords } from "../src/lib/data/competitions.ts";
 import { editions } from "../src/lib/data/editions.ts";
+import { organizers } from "../src/lib/data/organizers.ts";
 import {
   buildListing,
   effectiveStatus,
@@ -19,6 +20,60 @@ import {
   teamRange,
   visibleCompetitions,
 } from "../src/lib/filters.ts";
+
+// ---------------------------------------------------------------------------
+// Data integrity (real data files). These fail loudly on bad hand-entered data.
+// ---------------------------------------------------------------------------
+
+// Edition.season must be "YYYY-YY" with consecutive years (e.g. "2026-27").
+// currentEditionFor picks the latest edition by sorting this string, which only
+// works if every value has the same shape: e.g. "26-27" sorts after "2027-28"
+// (position 2: '6' > '0'), so a malformed old edition would be picked over the
+// newer one.
+for (const e of editions) {
+  const m = /^(\d{4})-(\d{2})$/.exec(e.season);
+  assert.ok(m, `edition ${e.id}: season "${e.season}" is not YYYY-YY`);
+  const expected = String((Number(m[1]) + 1) % 100).padStart(2, "0");
+  assert.equal(m[2], expected, `edition ${e.id}: season "${e.season}" years are not consecutive`);
+}
+
+// Ids must be unique per table: bookmarks and React list keys use them, so a
+// duplicate would make two cards save/unsave together or render wrongly.
+for (const [table, rows] of [
+  ["organizers", organizers],
+  ["competitions", competitionRecords],
+  ["editions", editions],
+]) {
+  const seen = new Set();
+  for (const { id } of rows) {
+    assert.ok(!seen.has(id), `${table}: duplicate id "${id}"`);
+    seen.add(id);
+  }
+}
+
+// References must point at real rows: a typo in competitionId silently hides
+// that edition, and a bad organizerId breaks anything that shows the organizer.
+const organizerIds = new Set(organizers.map((o) => o.id));
+for (const c of competitionRecords) {
+  assert.ok(organizerIds.has(c.organizerId), `competition ${c.id}: unknown organizerId "${c.organizerId}"`);
+}
+const competitionIds = new Set(competitionRecords.map((c) => c.id));
+for (const e of editions) {
+  assert.ok(competitionIds.has(e.competitionId), `edition ${e.id}: unknown competitionId "${e.competitionId}"`);
+}
+
+// Dates must be null or a real "YYYY-MM-DD": status logic compares them as
+// strings (today <= deadline), which is only correct for zero-padded ISO dates.
+// The round-trip through Date also rejects impossible dates like 2026-02-30.
+const isIsoDate = (s) =>
+  /^\d{4}-\d{2}-\d{2}$/.test(s) &&
+  new Date(`${s}T00:00:00Z`).toISOString().slice(0, 10) === s;
+for (const e of editions) {
+  for (const key of ["registrationDeadline", "startDate", "endDate", "lastVerifiedAt"]) {
+    const v = e[key];
+    assert.ok(v === null || (typeof v === "string" && isIsoDate(v)), `edition ${e.id}: ${key} "${v}" is not null or YYYY-MM-DD`);
+  }
+}
 
 const statusById = (today) =>
   Object.fromEntries(
@@ -223,6 +278,12 @@ assert.equal(labelById["9"], "1–3", "ICM");
 assert.equal(labelById["4"], "1", "Putnam");
 assert.equal(labelById["2"], "2+", "Jane Street");
 assert.ok(!("tier" in nov9[0]), "tier removed from listing");
+
+// View naming: term (Fall/Winter/…) and topics, not season/tags.
+const putnam = nov9.find((c) => c.id === "4");
+assert.equal(putnam.term, "Fall", "Putnam term");
+assert.ok(!("season" in putnam) && !("tags" in putnam), "old view names gone");
+assert.deepEqual(putnam.topics, competitionRecords.find((r) => r.id === "4").topics);
 
 // New York date: 2026-11-10 03:00 UTC is still Nov 9 in New York.
 assert.equal(todayInNewYork(new Date("2026-11-10T03:00:00Z")), "2026-11-09");

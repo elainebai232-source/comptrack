@@ -2,11 +2,11 @@ import type {
   Competition,
   CompetitionRecord,
   Edition,
-  Season,
+  Term,
   StoredEditionStatus,
 } from "./types";
 
-const MONTH_TO_SEASON: Record<string, Season> = {
+const MONTH_TO_TERM: Record<string, Term> = {
   Jan: "Winter",
   Feb: "Winter",
   Mar: "Spring",
@@ -66,11 +66,11 @@ export function effectiveStatus(
   return "not_announced";
 }
 
-export function academicSeasonFromUsuallyOpens(
+export function termFromUsuallyOpens(
   usuallyOpens: string | null
-): Season {
+): Term {
   if (!usuallyOpens) return "Year-round";
-  return MONTH_TO_SEASON[usuallyOpens] ?? "Year-round";
+  return MONTH_TO_TERM[usuallyOpens] ?? "Year-round";
 }
 
 /** Never drops a card: null fields stay null and the UI decides how to show them. */
@@ -85,10 +85,10 @@ export function toCompetitionView(
     field: record.field,
     deadline: edition.registrationDeadline,
     difficulty: record.difficulty,
-    tags: record.topics,
-    // TODO: derive season from real dates (startDate / registrationDeadline);
+    topics: record.topics,
+    // TODO: derive term from real dates (startDate / registrationDeadline);
     // keep usuallyOpens only as a fallback when no dates are known.
-    season: academicSeasonFromUsuallyOpens(edition.usuallyOpens),
+    term: termFromUsuallyOpens(edition.usuallyOpens),
     teamSizeMin: record.teamSizeMin,
     teamSizeMax: record.teamSizeMax,
     status: effectiveStatus(edition, today),

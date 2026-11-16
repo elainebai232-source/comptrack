@@ -71,6 +71,21 @@ Where it conflicts with this file (e.g. it lists `prize` as a field), **this fil
   Season | Team. Team = `teamSizeLabel(min, max)` in `derived.ts`: min = max → "N"; min ≠ max →
   "1–3" (en dash); only min → "N+"; only max → "1–N" ("1" if N = 1); neither → "Not specified"
   (not "Not announced", which would clash with the `not_announced` status).
+- **Naming in the listing view** (`Competition` in `types.ts`): `term` (type `Term`:
+  Fall / Winter / Spring / Summer / Year-round, from `termFromUsuallyOpens`) is the card's
+  time of year; `Edition.season` ("2026-27") is the academic year of one edition — different
+  things, different names. The card label for `term` is still "Season" (UI text unchanged).
+  `topics` is `CompetitionRecord.topics` passed through as-is (formerly `tags` in the view).
+- **Data-integrity checks** (`npm run check:listing`, real data files; fail loudly):
+  - `Edition.season` is `YYYY-YY` with consecutive years (e.g. "2026-27") — `currentEditionFor`
+    picks the latest edition by string sort, so a malformed value can win: "26-27" sorts after
+    "2027-28" (position 2: '6' > '0'), so that old edition would be picked over the newer one.
+  - ids are unique within organizers, competitions, and editions (saved bookmarks and React
+    keys use them).
+  - every `Competition.organizerId` and `Edition.competitionId` points to an existing row
+    (a typo would silently hide an edition).
+  - `registrationDeadline` / `startDate` / `endDate` / `lastVerifiedAt` are null or a real
+    `YYYY-MM-DD` date (status logic compares dates as strings).
 - Status: Organizer/Competition/Edition split done, 7 existing rows migrated.
   COMAP MCM + ICM added as the first real sample data (2026-27 edition).
 
@@ -81,7 +96,7 @@ Keep this list current: add items as they come up, remove them when fixed.
   "today" — should take the server `today` prop like the homepage.
 - `usuallyOpens` lives on Edition; it should move to Competition (it's a property of the
   competition, not of one season).
-- Card `season` is derived from `usuallyOpens`; it should be derived from real dates
+- Card `term` is derived from `usuallyOpens`; it should be derived from real dates
   (startDate / registrationDeadline), with `usuallyOpens` only as a fallback.
 - The 6 original competitions (ids 1, 2, 3, 5, 6, 7) are placeholder data — replace with real
   current-season data.
@@ -97,4 +112,6 @@ Keep this list current: add items as they come up, remove them when fixed.
 - Before large or multi-file changes, tell me the plan first and wait for my OK.
 - Keep changes small and commit-sized; don't rewrite whole files for a small edit.
 - When a feature ships or the data model changes, update `README.md` and this file too.
+- Whenever the data model changes (fields, types, derived rules, integrity checks), update
+  `docs/data-model.md` in the same commit.
 - Big-picture/strategy decisions I make elsewhere; here, focus on implementation.
