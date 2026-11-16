@@ -108,7 +108,7 @@ const ids = (opts) =>
     .sort();
 assert.deepEqual(ids({}), ["4", "8", "9"], "default hides not_announced");
 assert.equal(ids({ showNoPosting: true }).length, 9, "toggle on shows all");
-for (const field of ["Quant", "ML", "Math", "Finance", "CS"]) {
+for (const field of ["Quant", "ML", "Math", "Data", "CS"]) {
   const expectedAll = nov9.filter((c) => c.field === field).map((c) => c.id).sort();
   assert.deepEqual(ids({ field, showNoPosting: true }), expectedAll, `${field}, toggle on`);
   assert.deepEqual(
@@ -188,7 +188,7 @@ assert.equal(serializeFilterParams(DEFAULT_FILTERS), "");
 const sample = { field: "Math", teams: ["solo", "small"], includeUnspecified: true, showNoPosting: true };
 assert.equal(serializeFilterParams(sample), "field=Math&team=solo,small&unspecified=1&noPosting=1");
 assert.deepEqual(q(serializeFilterParams(sample)), sample, "round-trip");
-for (const f of ["All", "Quant", "ML", "Math", "Finance", "CS"]) {
+for (const f of ["All", "Quant", "ML", "Math", "Data", "CS"]) {
   for (const teams of [[], ["large"], ["solo", "large"], ["solo", "small", "large"]]) {
     for (const flags of [[false, false], [true, false], [false, true], [true, true]]) {
       const v = { field: f, teams, includeUnspecified: flags[0], showNoPosting: flags[1] };
@@ -196,6 +196,8 @@ for (const f of ["All", "Quant", "ML", "Math", "Finance", "CS"]) {
     }
   }
 }
+assert.deepEqual(q("field=Finance"), DEFAULT_FILTERS, "removed field Finance is ignored");
+assert.deepEqual(q("field=Data"), { ...DEFAULT_FILTERS, field: "Data" }, "field=Data parses");
 assert.deepEqual(q("field=xyz&team=abc,solo"), { ...DEFAULT_FILTERS, teams: ["solo"] }, "garbage ignored, valid kept");
 assert.deepEqual(q("team=large,solo,solo"), { ...DEFAULT_FILTERS, teams: ["solo", "large"] }, "deduped, canonical order");
 assert.deepEqual(q("field=math"), { ...DEFAULT_FILTERS, field: "Math" }, "field is case-insensitive");

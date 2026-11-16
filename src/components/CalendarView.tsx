@@ -245,7 +245,7 @@ function dotColor(field: Competition["field"]): string {
     Quant: "bg-indigo-400",
     ML: "bg-emerald-400",
     Math: "bg-amber-400",
-    Finance: "bg-sky-400",
+    Data: "bg-sky-400",
     CS: "bg-rose-400",
   };
   return map[field];

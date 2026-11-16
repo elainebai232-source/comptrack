@@ -32,6 +32,11 @@ Where it conflicts with this file (e.g. it lists `prize` as a field), **this fil
   (e.g. COMAP → MCM / ICM / HiMCM → a specific season/year)
 - `teamSize`: store real `min` / `max` numbers; filter tags (1 / 2–3 / 4+) and the card label
   are **derived** from them
+- `field`: single-valued and nullable. Allowed values (filter order): Quant / ML / Math / Data / CS
+  (`Field` in `types.ts`, `FIELDS` in `filters.ts`, plus color maps in FieldFilter, FieldBadge,
+  CalendarView). "Finance" was replaced by "Data" (quant-finance is covered by Quant); an old
+  `?field=Finance` link is ignored (falls back to All). A null field shows no badge and only
+  appears under All. **This list is provisional** until real scraped data is in.
 - `tier`: **removed on purpose** (no tier field, label, or card cell)
 - `prize`: **removed on purpose** (students care about reputation, not prize money)
 - The listing mapper must tolerate nullable fields; a null field should never make a card disappear.

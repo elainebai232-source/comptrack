@@ -76,7 +76,7 @@ export const competitionRecords: CompetitionRecord[] = [
     teamSizeMax: null,
     eligibility: null,
     prepResourcesUrl: null,
-    field: "Finance",
+    field: "Data",
     difficulty: "Intermediate",
   },
   {
@@ -89,7 +89,7 @@ export const competitionRecords: CompetitionRecord[] = [
     teamSizeMax: null,
     eligibility: null,
     prepResourcesUrl: null,
-    field: "Finance",
+    field: null,
     difficulty: "Intermediate",
   },
   {

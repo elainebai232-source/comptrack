@@ -2,7 +2,7 @@ import type { Competition, Field } from "./types";
 
 // Lives here (not in types.ts) so types.ts stays type-only and the
 // check:listing script can import this file under plain Node.
-export const FIELDS: Field[] = ["All", "Quant", "ML", "Math", "Finance", "CS"];
+export const FIELDS: Field[] = ["All", "Quant", "ML", "Math", "Data", "CS"];
 
 // ---------------------------------------------------------------------------
 // Team size

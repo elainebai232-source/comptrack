@@ -1,4 +1,4 @@
-export type Field = "Quant" | "ML" | "Math" | "Finance" | "CS" | "All";
+export type Field = "Quant" | "ML" | "Math" | "Data" | "CS" | "All";
 
 export type Difficulty = "Beginner" | "Intermediate" | "Advanced";
 
