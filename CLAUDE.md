@@ -91,6 +91,14 @@ Where it conflicts with this file (e.g. it lists `prize` as a field), **this fil
 
 ## Known issues / TODO
 Keep this list current: add items as they come up, remove them when fixed.
+- **Week 3: source reconnaissance — IN PROGRESS.** Findings and decisions are in
+  `docs/sources.md` (research only, nothing verified). Strategy is hybrid: flagship
+  competitions (COMAP, Putnam, ICPC, Prosperity, IQC) are entered and re-verified by hand.
+  Only sources whose robots.txt and terms allow it are fetched automatically, and we never
+  work around robots.txt, bot blocks, or 403/406 responses. MLH is the scraping prototype
+  only. Calendar polish is postponed until after reconnaissance.
+- Future: re-check reminder list for manually entered competitions (based on `usuallyOpens`
+  and `lastVerifiedAt`).
 - Calendar (`CalendarView.tsx`) still uses the module-level `competitions` from
   `lib/competitions.ts` (built with the module's own `todayInNewYork()`) and `new Date()` for
   "today" — should take the server `today` prop like the homepage.
